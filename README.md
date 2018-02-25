@@ -28,3 +28,77 @@ Apply your machine learning algorithm to the 20 test cases available in the test
 
 Reproducibility
 Due to security concerns with the exchange of R code, your code will not be run during the evaluation by your classmates. Please be sure that if they download the repo, they will be able to view the compiled HTML version of your analysis.
+
+
+#Loading Data
+library(caret)
+library(randomForest)
+library(ISLR)
+
+trainingSet <- read.csv("C:/Users/Cat/Documents/pml-training.csv", na.strings = c("NA","#DIV/0!",""))
+testingSet <- read.csv("C:/Users/Cat/Documents/pml-testing.csv", na.strings = c("NA","#DIV/0!",""))
+
+#Cleaning Data
+trainingSet <- trainingSet[,colSums(is.na(trainingSet))==0]
+testingSet <- testingSet[,colSums(is.na(trainingSet))==0]
+
+#remove unnessesary columns 
+trainingSet <- trainingSet[,-c(1:7)]
+testingSet <- testingSet[,-c(1:7)]
+
+#subsetting Data
+intrain <- createDataPartition(y= trainingSet$classe, p=0.7, list=FALSE)
+
+training <- trainingSet[intrain,]
+testing <- trainingSet[-intrain,]
+
+#RandomForest
+modeltrain <- randomForest(classe ~., data=training, method = "class")
+prediction <- predict(modeltrain, training, type="class")
+confusionMatrix(prediction, training$classe)
+predictionfinal <- predict(modeltrain, testingSet, type="class")
+
+predictionfinal
+
+Confusion Matrix and Statistics
+
+          Reference
+Prediction    A    B    C    D    E
+         A 3906    0    0    0    0
+         B    0 2658    0    0    0
+         C    0    0 2396    0    0
+         D    0    0    0 2252    0
+         E    0    0    0    0 2525
+
+Overall Statistics
+                                     
+               Accuracy : 1          
+                 95% CI : (0.9997, 1)
+    No Information Rate : 0.2843     
+    P-Value [Acc > NIR] : < 2.2e-16  
+                                     
+                  Kappa : 1          
+ Mcnemar's Test P-Value : NA         
+
+Statistics by Class:
+
+                     Class: A Class: B Class: C Class: D Class: E
+Sensitivity            1.0000   1.0000   1.0000   1.0000   1.0000
+Specificity            1.0000   1.0000   1.0000   1.0000   1.0000
+Pos Pred Value         1.0000   1.0000   1.0000   1.0000   1.0000
+Neg Pred Value         1.0000   1.0000   1.0000   1.0000   1.0000
+Prevalence             0.2843   0.1935   0.1744   0.1639   0.1838
+Detection Rate         0.2843   0.1935   0.1744   0.1639   0.1838
+Detection Prevalence   0.2843   0.1935   0.1744   0.1639   0.1838
+Balanced Accuracy      1.0000   1.0000   1.0000   1.0000   1.0000
+
+#DownLoad Results Files
+pml_write_files = function(x){
+  n=length(x)
+  for(i in 1:n){
+    filename = paste0("problem_id_",i,".txt")
+  write.table(x[i], file = filename, quote = FALSE, row.names = FALSE, col.names = FALSE)
+  }
+}
+pml_write_files(predictionfinal)
+
