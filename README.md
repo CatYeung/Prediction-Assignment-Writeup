@@ -30,7 +30,7 @@ Reproducibility
 Due to security concerns with the exchange of R code, your code will not be run during the evaluation by your classmates. Please be sure that if they download the repo, they will be able to view the compiled HTML version of your analysis.
 
 
-#Loading Data
+# Loading Data
 library(caret)
 library(randomForest)
 library(ISLR)
@@ -38,21 +38,21 @@ library(ISLR)
 trainingSet <- read.csv("C:/Users/Cat/Documents/pml-training.csv", na.strings = c("NA","#DIV/0!",""))
 testingSet <- read.csv("C:/Users/Cat/Documents/pml-testing.csv", na.strings = c("NA","#DIV/0!",""))
 
-#Cleaning Data
+# Cleaning Data
 trainingSet <- trainingSet[,colSums(is.na(trainingSet))==0]
 testingSet <- testingSet[,colSums(is.na(trainingSet))==0]
 
-#remove unnessesary columns 
+# remove unnessesary columns 
 trainingSet <- trainingSet[,-c(1:7)]
 testingSet <- testingSet[,-c(1:7)]
 
-#subsetting Data
+# subsetting Data
 intrain <- createDataPartition(y= trainingSet$classe, p=0.7, list=FALSE)
 
 training <- trainingSet[intrain,]
 testing <- trainingSet[-intrain,]
 
-#RandomForest
+# RandomForest
 modeltrain <- randomForest(classe ~., data=training, method = "class")
 prediction <- predict(modeltrain, training, type="class")
 confusionMatrix(prediction, training$classe)
@@ -92,7 +92,7 @@ Detection Rate         0.2843   0.1935   0.1744   0.1639   0.1838
 Detection Prevalence   0.2843   0.1935   0.1744   0.1639   0.1838
 Balanced Accuracy      1.0000   1.0000   1.0000   1.0000   1.0000
 
-#DownLoad Results Files
+# DownLoad Results Files
 pml_write_files = function(x){
   n=length(x)
   for(i in 1:n){
